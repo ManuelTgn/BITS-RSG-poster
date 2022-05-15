@@ -54,6 +54,16 @@ way$How.old.are.you. <- revalue(way$How.old.are.you., c("Under 18"=">18",
 #  "PhD student (either in academia or industry)"="PhD student"))
 ```
 
+# Age and gender
+
+The 56.70% of the participants are in the 23-26 age group, followed by a 24.52% of participants belonged to 19-22 age group.
+<br>
+More than half of the participants declare to self-identify with the pronouns 'she/her' (57.09%); 39.85% self-identify with the pronouns 'he/him'.
+```{r,hide = TRUE}
+prop.table(table(way$How.old.are.you.))*100
+prop.table(table(way$What.are.your.pronouns.))*100
+```
+
 # Where are you from?
 
 ```{r,hide = TRUE}
