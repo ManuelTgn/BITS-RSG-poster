@@ -1,0 +1,149 @@
+---
+title: "ISCB-RSG Italy: Bioinformatic perception survey, 'Who are you?'section"
+author: "ISCB RSG Italy Committee"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    code_folding: "hide"
+    toc: true
+    toc_float: true
+    theme: united
+---
+
+
+```{r, setup, hide = TRUE, echo=FALSE, results = FALSE, warning=FALSE}
+library(plyr)
+library(reticulate)
+library(tidyverse)
+library(rcartocolor)
+# To run this .rmd file:
+#export PATH=${PATH}:/cm/shared/apps/R/deps/rstudio/bin/pandoc
+#file="./Who_are_you_section_analysis.Rmd"
+#module load R
+#Rscript -e 'rmarkdown::render("'$file'")'
+```
+# Take the columns for 'Who are you ?' section
+
+```{r,hide = TRUE}
+survey <- read.table("../../data/BioinformaticsSurvey2022.csv",sep=",",header=TRUE)
+#take only the questions in the 'Who are you ?' section:
+way <- survey %>% select("How.old.are.you.","What.are.your.pronouns.","Where.are.you.from.",
+                         "Where.in.Italy.are.you.studying.did.you.study.",          "Are.you.an.off.site.student.","What.is.your.current.position.","Is.bioinformatics.the.main.focus.of.your.studies.")
+#columns as factor:
+way <- way %>% mutate_if(is.character,as.factor)
+#rename to shorten levels with the Italian areas:
+way$Where.are.you.from. <- revalue(way$Where.are.you.from., c("Italian Islands (Sicilia, Sardegna)"="Italian Islands",
+"Central Italy (Toscana, Umbria, Lazio, Marche)"="Central Italy",
+"Northern-East Italy (Trentino-Alto Adige, Veneto, Friuli-Venezia Giulia, Emilia-Romagna)"="Northern-East Italy",
+"Northern-West Italy (Valle d'Aosta, Liguria, Lombardia, Piemonte)"="Northern-West Italy",
+"Southern Italy (Abruzzo, Molise, Campania, Puglia, Basilicata, Calabria)"="Southern Italy"))
+
+way$Where.in.Italy.are.you.studying.did.you.study. <- revalue(way$Where.in.Italy.are.you.studying.did.you.study., c("Italian Islands (Sicilia, Sardegna)"="Italian Islands",
+"Central Italy (Toscana, Umbria, Lazio, Marche)"="Central Italy",
+"Northern-East Italy (Trentino-Alto Adige, Veneto, Friuli-Venezia Giulia, Emilia-Romagna)"="Northern-East Italy",
+"Northern-West Italy (Valle d'Aosta, Liguria, Lombardia, Piemonte)"="Northern-West Italy",
+"Southern Italy (Abruzzo, Molise, Campania, Puglia, Basilicata, Calabria)"="Southern Italy"))
+
+way$How.old.are.you. <- revalue(way$How.old.are.you., c("Under 18"=">18",
+                                                        "Over 35"="35>"))
+
+#way$What.is.your.current.position. <- revalue(way$What.is.your.current.position., c(
+#  ""="Bachelor student",
+#  "Employed in other academic positions (research assistant, facility technician, â€¦)"="Employed in other academic positions",
+#  "Employed outside academia (company, start-up, spin-off, â€¦)"="Employed outside academia",
+#  "PhD student (either in academia or industry)"="PhD student"))
+```
+
+# Where are you from?
+
+```{r,hide = TRUE}
+ggplot(data = way,
+       aes(x = Where.are.you.from.,
+           fill = Where.are.you.from.)) + 
+  geom_bar(aes(y = (..count..)/sum(..count..)), show.legend=FALSE) +
+  scale_y_continuous(labels=scales::percent) +
+  labs(x = "Continent or Italian areas", 
+       y = "Relative frequency", 
+       title  = "Where are you from ?") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+  scale_fill_manual(values=c("#798234","#a3ad62","#d0d3a2","#fdfbe4","#f0c6c3","#df91a3","#d46780","#d1eeea"))
+
+ggplot(data = way,
+       aes(x = Where.are.you.from., 
+           fill = Are.you.an.off.site.student.)) + 
+  geom_bar(position = "dodge") +
+  labs(x = "Italian areas",
+       title  = "'Where are you from?' vs 'Are you an off-site student?'",
+       fill = "Off-site student status") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+   scale_fill_manual(values=c("#66C5CC","#DCB0F2"))
+```
+
+# 'Where in Italy are you studying/did you study ?' with 'Where are you from?'
+
+```{r,hide = TRUE}
+ggplot(data = way,
+       aes(x = Where.in.Italy.are.you.studying.did.you.study., 
+           fill = Where.are.you.from.)) + 
+  geom_bar(position = "dodge") +
+  labs(x = "Italian areas",
+       title  = "'Where in Italy are you studying/did you study?' vs 'Where are you from?'",
+       fill = "Continent or Italian areas of origin") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+   scale_fill_manual(values=c("#798234","#a3ad62","#d0d3a2","#fdfbe4","#f0c6c3","#df91a3","#d46780","#d1eeea"))
+
+
+ggplot(data = way,
+       aes(x = Where.in.Italy.are.you.studying.did.you.study., 
+           fill = Where.are.you.from.)) + 
+  geom_bar(position = "fill") +
+  labs(x = "Italian areas",
+       title  = "Italian areas of studies by origin and off-site student status",
+       fill = "Continent or Italian areas of origin") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+  scale_fill_manual(values=c("#798234","#a3ad62","#d0d3a2","#fdfbe4","#f0c6c3","#df91a3","#d46780","#d1eeea")) +
+  facet_grid(.~Are.you.an.off.site.student.)
+
+ggplot(data = way,
+       aes(x = Where.in.Italy.are.you.studying.did.you.study., 
+           fill = Is.bioinformatics.the.main.focus.of.your.studies.)) + 
+  geom_bar(position = "dodge") +
+  labs(x = "Italian areas",
+       title  = "Italian areas of studies by bioinformatics as main topic",
+       fill = "Bioinformatics as main topic") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+   scale_fill_manual(values=c("#66C5CC","#DCB0F2"))
+
+```
+
+# What is your current position?
+
+```{r,hide = TRUE}
+ggplot(data = way,
+       aes(x = What.is.your.current.position., 
+           fill = What.is.your.current.position.)) + 
+  geom_bar(aes(y = (..count..)/sum(..count..)),show.legend=FALSE) + 
+  scale_y_continuous(labels=scales::percent) +
+  labs(x = "Current position", 
+       y = "Relative frequency", 
+       title  = "What is your current position ?") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 50, hjust=1)) +
+  scale_fill_manual(values=c("#245668","#04817E","#39AB7E","#8BD16D","#EDEF5D"))
+
+ggplot(data = way,
+       aes(x = How.old.are.you., 
+           fill = What.is.your.current.position.)) + 
+  geom_bar(position = "dodge") +
+  labs(x = "Age group",
+       title  = "Current position by age group",
+       fill = "Current position") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+  scale_fill_manual(values=c("#245668","#04817E","#39AB7E","#8BD16D","#EDEF5D"))
+```
