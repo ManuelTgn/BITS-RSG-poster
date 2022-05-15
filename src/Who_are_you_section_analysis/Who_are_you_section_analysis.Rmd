@@ -68,6 +68,7 @@ ggplot(data = way,
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust=1)) +
   scale_fill_manual(values=c("#798234","#a3ad62","#d0d3a2","#fdfbe4","#f0c6c3","#df91a3","#d46780","#d1eeea"))
+ggsave("Where_are_you_from.png")
 
 ggplot(data = way,
        aes(x = Where.are.you.from., 
@@ -79,6 +80,7 @@ ggplot(data = way,
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust=1)) +
    scale_fill_manual(values=c("#66C5CC","#DCB0F2"))
+ggsave("Where_are_you_from_by_offsite_student.png")
 ```
 
 # 'Where in Italy are you studying/did you study ?' with 'Where are you from?'
@@ -94,7 +96,7 @@ ggplot(data = way,
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust=1)) +
    scale_fill_manual(values=c("#798234","#a3ad62","#d0d3a2","#fdfbe4","#f0c6c3","#df91a3","#d46780","#d1eeea"))
-
+ggsave("Italian_areas_of_studies.png")
 
 ggplot(data = way,
        aes(x = Where.in.Italy.are.you.studying.did.you.study., 
@@ -107,6 +109,8 @@ ggplot(data = way,
   theme(axis.text.x = element_text(angle = 45, hjust=1)) +
   scale_fill_manual(values=c("#798234","#a3ad62","#d0d3a2","#fdfbe4","#f0c6c3","#df91a3","#d46780","#d1eeea")) +
   facet_grid(.~Are.you.an.off.site.student.)
+ggsave("Italian_areas_of_studies_by_origin.png")
+
 
 ggplot(data = way,
        aes(x = Where.in.Italy.are.you.studying.did.you.study., 
@@ -118,6 +122,7 @@ ggplot(data = way,
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust=1)) +
    scale_fill_manual(values=c("#66C5CC","#DCB0F2"))
+ggsave("Italian_areas_of_studies_by_bioinfo.png")
 
 ```
 
@@ -135,6 +140,8 @@ ggplot(data = way,
   theme_classic() +
   theme(axis.text.x = element_text(angle = 50, hjust=1)) +
   scale_fill_manual(values=c("#245668","#04817E","#39AB7E","#8BD16D","#EDEF5D"))
+ggsave("Current_position.png")
+
 
 ggplot(data = way,
        aes(x = How.old.are.you., 
@@ -146,4 +153,5 @@ ggplot(data = way,
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust=1)) +
   scale_fill_manual(values=c("#245668","#04817E","#39AB7E","#8BD16D","#EDEF5D"))
+ggsave("Current_position_by_age.png")
 ```
