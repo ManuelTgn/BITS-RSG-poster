@@ -33,26 +33,26 @@ way <- survey %>% select("How.old.are.you.","What.are.your.pronouns.","Where.are
 #columns as factor:
 way <- way %>% mutate_if(is.character,as.factor)
 #rename to shorten levels with the Italian areas:
-way$Where.are.you.from. <- revalue(way$Where.are.you.from., c("Italian Islands (Sicilia, Sardegna)"="Italian Islands",
-"Central Italy (Toscana, Umbria, Lazio, Marche)"="Central Italy",
-"Northern-East Italy (Trentino-Alto Adige, Veneto, Friuli-Venezia Giulia, Emilia-Romagna)"="Northern-East Italy",
-"Northern-West Italy (Valle d'Aosta, Liguria, Lombardia, Piemonte)"="Northern-West Italy",
-"Southern Italy (Abruzzo, Molise, Campania, Puglia, Basilicata, Calabria)"="Southern Italy"))
+way$Where.are.you.from. <- revalue(way$Where.are.you.from., c("Italian Islands (Sicilia, Sardegna)"="Islands",
+"Central Italy (Toscana, Umbria, Lazio, Marche)"="Centre",
+"Northern-East Italy (Trentino-Alto Adige, Veneto, Friuli-Venezia Giulia, Emilia-Romagna)"="Northern-East",
+"Northern-West Italy (Valle d'Aosta, Liguria, Lombardia, Piemonte)"="Northern-West",
+"Southern Italy (Abruzzo, Molise, Campania, Puglia, Basilicata, Calabria)"="South"))
 
-way$Where.in.Italy.are.you.studying.did.you.study. <- revalue(way$Where.in.Italy.are.you.studying.did.you.study., c("Italian Islands (Sicilia, Sardegna)"="Italian Islands",
-"Central Italy (Toscana, Umbria, Lazio, Marche)"="Central Italy",
-"Northern-East Italy (Trentino-Alto Adige, Veneto, Friuli-Venezia Giulia, Emilia-Romagna)"="Northern-East Italy",
-"Northern-West Italy (Valle d'Aosta, Liguria, Lombardia, Piemonte)"="Northern-West Italy",
-"Southern Italy (Abruzzo, Molise, Campania, Puglia, Basilicata, Calabria)"="Southern Italy"))
+way$Where.in.Italy.are.you.studying.did.you.study. <- revalue(way$Where.in.Italy.are.you.studying.did.you.study., c("Italian Islands (Sicilia, Sardegna)"="Islands",
+"Central Italy (Toscana, Umbria, Lazio, Marche)"="Centre",
+"Northern-East Italy (Trentino-Alto Adige, Veneto, Friuli-Venezia Giulia, Emilia-Romagna)"="Northern-East",
+"Northern-West Italy (Valle d'Aosta, Liguria, Lombardia, Piemonte)"="Northern-West",
+"Southern Italy (Abruzzo, Molise, Campania, Puglia, Basilicata, Calabria)"="South"))
 
 way$How.old.are.you. <- revalue(way$How.old.are.you., c("Under 18"=">18",
                                                         "Over 35"="35>"))
 
-#way$What.is.your.current.position. <- revalue(way$What.is.your.current.position., c(
-#  "Bachelorâ€™s student"="Bachelor student",
-#  "Employed in other academic positions (research assistant, facility technician, â€¦)"="Employed in other academic positions",
-#  "Employed outside academia (company, start-up, spin-off, â€¦)"="Employed outside academia",
-#  "PhD student (either in academia or industry)"="PhD student"))
+way$What.is.your.current.position. <- revalue(way$What.is.your.current.position., c(
+  "Bachelorâ€™s student"="Bachelor's student",
+  "Employed in other academic positions (research assistant, facility technician, â€¦)"="Employed in other academic positions",
+  "Employed outside academia (company, start-up, spin-off, â€¦)"="Employed outside academia",
+  "PhD student (either in academia or industry)"="PhD student"))
 ```
 
 # Age and gender
@@ -209,11 +209,6 @@ way_nobioinfo <- way  %>% filter(Is.bioinformatics.the.main.focus.of.your.studie
 # Compute percentages
 donut_chart_fc <- function(data,title_name) {
     colnames(data)[1] <- "category"
-data$category <- revalue(data$category, c(
-"Bachelorâ€™s student"="Bachelor student",
-"Employed in other academic positions (research assistant, facility technician, â€¦)"="Employed in other academic positions",
-"Employed outside academia (company, start-up, spin-off, â€¦)"="Employed outside academia",
-"PhD student (either in academia or industry)"="PhD student"))
 data <- data %>%
   group_by(category) %>%
   mutate(count = n()) %>% unique()
@@ -243,7 +238,7 @@ donut_chart_plot <- ggplot(data, aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill=
   guides(fill = guide_legend(
     title = "Legend",
     override.aes = aes(label = ""))) +
-  theme(legend.position = "left",legend.title = element_text(size = 12),plot.title = element_text(size = 20)) +
+  theme(legend.position = "left",legend.title = element_text(size = 20),plot.title = element_text(size = 18),legend.text = element_text(size=20)) +
   ggtitle(title_name)
   
 return(donut_chart_plot)
@@ -303,8 +298,8 @@ piechart_plot <- ggplot(data, aes(x="", y=prop, fill=group)) +
             size=7) +
   coord_polar(theta = "y") +
   scale_fill_brewer(palette=3) +
-  theme_void() 
-  # + theme(legend.position="none")
+  theme_void() +
+  theme(legend.position="none")
 
 
  return(piechart_plot)
@@ -330,22 +325,29 @@ ggsave("poster_figs/current_position_bybionfo_piechart.png", combined_donut_piec
 #need to have same levels for the two columns I am comparing, so add levels to 'Where.in.Italy.are.you.studying.did.you.study'
 way$Where.in.Italy.are.you.studying.did.you.study. <- factor(way$Where.in.Italy.are.you.studying.did.you.study., levels=levels(way$Where.are.you.from.))
 
-way <- way %>% mutate(off_site_origin = ifelse(way$Are.you.an.off.site.student. == "No", "No", ifelse(way$Where.are.you.from. == way$Where.in.Italy.are.you.studying.did.you.study., "Yes same origin region", "Yes different origin region")))
+way <- way %>% mutate(off_site_origin = ifelse(way$Are.you.an.off.site.student. == "No", "Hometown", ifelse(way$Where.are.you.from. == way$Where.in.Italy.are.you.studying.did.you.study., "Offsite same origin region", "Offsite different origin region")))
 
 way$off_site_origin <- as.factor(way$off_site_origin)
 
+way$Is.bioinformatics.the.main.focus.of.your.studies. <- revalue(way$Is.bioinformatics.the.main.focus.of.your.studies., c("No"="STEM","Yes"="Bionformatics"))
+                                                                 
+
+#title  = "Italian areas of studies by bioinformatics/STEM and off-site status")
 Italian_areas_study_by_offsiteorigin_bioinfostatus <- ggplot(data = way,
        aes(x = Where.in.Italy.are.you.studying.did.you.study., 
            fill = Where.in.Italy.are.you.studying.did.you.study.)) + 
   geom_bar(aes(y = (..count..)/sum(..count..)),show.legend=FALSE) + 
   scale_y_continuous(labels=scales::percent) +
   labs(x = "Italian areas of study",
-       y = "Relative frequency",
-       title  = "Italian areas of studies by bioinformatics/STEM and off-site status") +
+       y = "Relative frequency") +
   theme_classic() + 
   facet_grid(Is.bioinformatics.the.main.focus.of.your.studies. ~ off_site_origin) +
-  theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+  theme(strip.text = element_text(face = "bold", size = rel(2)),
+    strip.background = element_rect(colour = "white", size = 1)) +
+  theme(axis.text.x = element_text(angle = 45, hjust=1, size = 15), axis.text.y = element_text(size = 15), axis.title.y = element_text(size = 16), axis.title.x = element_text(size = 16)) +
   scale_fill_manual(values=c("#245668","#04817E","#39AB7E","#8BD16D","#EDEF5D"))
+    
 
 ggsave("poster_figs/Italian_areas_study_by_offsiteorigin_bioinfostatus.png",Italian_areas_study_by_offsiteorigin_bioinfostatus, width = 16, height = 8)  
 ```
+
